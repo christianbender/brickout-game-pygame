@@ -50,7 +50,7 @@ class Ball(object):
             draws the ball onto screen.
         """
         pygame.draw.circle(screen,(255, 0, 0) , (self._xLoc,self._yLoc), self._radius)
-    def update(self, paddle):
+    def update(self, paddle, brickwall):
         """
             moves the ball at the screen.
             contains some collision detection.
@@ -65,6 +65,10 @@ class Ball(object):
             self.__yVel *= -1
         elif self._yLoc >= self.__height - self._radius:
             return True
+
+        # for bouncing off the bricks.
+        if brickwall.collide(self):
+            self.__yVel *= -1
 
         # collision deection between ball and paddle
         paddleX = paddle._xLoc
@@ -222,6 +226,15 @@ class BrickWall (pygame.sprite.Group):
             Has player win the game?
         """
         return len(self._bricks) == 0
+    def collide (self, ball):
+        """
+            check collisions between the ball and 
+            any of the bricks.
+        """
+        for brick in self._bricks:
+            if brick.collide(ball):
+                return True
+        return False
 
 # The game objects ball, paddle and brick wall
 ball = Ball(screen,25,350,250)
@@ -283,7 +296,7 @@ while not done:
         paddle.draw()
         paddle.update()
 
-        if ball.update(paddle):
+        if ball.update(paddle, brickWall):
             isGameOver = True
             gameStatus = False
         
