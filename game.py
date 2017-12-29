@@ -243,6 +243,8 @@ brickWall = BrickWall(screen,25,25,150,50)
 
 isGameOver = False # determines whether game is lose
 gameStatus = True # game is still running
+
+score = 0 # score for the game.
  
 pygame.display.set_caption("Brickout-game")
  
@@ -262,8 +264,13 @@ mgGameOver = pygame.font.SysFont('Comic Sans MS', 60)
 # message for winning the game.
 mgWin = pygame.font.SysFont('Comic Sans MS', 60)
 
+# message for score
+mgScore = pygame.font.SysFont('Comic Sans MS', 60)
+
 textsurfaceGameOver = mgGameOver.render('Game Over!', False, (0, 0, 0))
 textsurfaceWin = mgWin.render("You win!",False,(0,0,0))
+textsurfaceScore = mgScore.render("score: "+str(score),False,(0,0,0))
+   
  
 # -------- Main Program Loop -----------
 while not done:
@@ -290,8 +297,18 @@ while not done:
         are both in the same section.
     """
     if gameStatus:
-        brickWall.update(ball)
+
+        # first draws ball for appropriate displaying the score. 
         brickWall.draw()
+
+         # for counting and displaying the score
+        if brickWall.collide(ball):
+            score += 10
+        textsurfaceScore = mgScore.render("score: "+str(score),False,(0,0,0))
+        screen.blit(textsurfaceScore,(300,0))
+
+        # after scoring. because hit bricks are removed in the update-method
+        brickWall.update(ball)
 
         paddle.draw()
         paddle.update()
@@ -308,8 +325,12 @@ while not done:
     else: # game isn't running.
         if isGameOver: # player lose
             screen.blit(textsurfaceGameOver,(0,0))
+            textsurfaceScore = mgScore.render("score: "+str(score),False,(0,0,0))
+            screen.blit(textsurfaceScore,(300,0))
         elif brickWall.hasWin(): # player win
             screen.blit(textsurfaceWin,(0,0))
+            textsurfaceScore = mgScore.render("score: "+str(score),False,(0,0,0))
+            screen.blit(textsurfaceScore,(300,0))
      
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
